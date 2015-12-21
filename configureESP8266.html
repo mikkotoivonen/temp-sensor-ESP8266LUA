@@ -1,0 +1,74 @@
+<html>
+<head>
+<title>ESP8266 configurator</title>
+<script src="jquery-1.11.3.min.js"></script>
+<script type="text/javascript">
+$.fn.serializeObject = function()
+{
+    var o = {};
+    var a = this.serializeArray();
+    $.each(a, function() {
+        if (o[this.name] !== undefined) {
+            if (!o[this.name].push) {
+                o[this.name] = [o[this.name]];
+            }
+            o[this.name].push(this.value || '');
+        } else {
+            o[this.name] = this.value || '';
+        }
+    });
+    return o;
+};
+
+$(function() {
+    $('form').submit(function() {
+        $('#result').text(JSON.stringify($('form').serializeObject()));
+        return false;
+    });
+});
+
+$(document).ready(function(){
+	$("button").click(function(){
+	
+		var dataToSend = JSON.stringify($('form').serializeObject());
+		
+		alert(dataToSend);
+		
+		
+		$.ajax({
+
+			url: "http://192.168.4.1/cfg?conf=" + dataToSend,
+			type: 'GET',
+			crossDomain: true,
+			dataType: 'jsonp',
+			success: function() { alert("Success"); },
+			error: function() { alert('Failed!'); }
+
+		});
+		
+	});
+});
+
+</script>
+</head>
+<body>
+
+<h2>Form</h2>
+<form action="" method="get">
+Access Point SSID:<input type="text" name="apssid" maxlength="12" size="20"/> <br/>
+Password:<input type="text" name="appwd" maxlength="36" size="20"/> <br/>
+Send host: <input type="text" name="sendhost" maxlength=256" size="50"/> <br/>
+Send port: <input type="text" name="sendport" maxlength=256" size="50"/> <br/>
+Send path: <input type="text" name="sendpath" maxlength=256" size="50"/> <br/>
+Send tag: <input type="text" name="tag" maxlength=256" size="50"/> <br/>
+Send interval (seconds): <input type="text" name="sendInterval" maxlength=256" size="50"/> <br/>
+Sampling period (seconds): <input type="text" name="samplingPeriod" maxlength=256" size="50"/> <br/>
+<p><input type="submit" value="View/Check" /></p>
+</form>
+<h2>JSON</h2>
+<pre id="result">
+</pre>
+<button>Send Config</button>
+
+</body>
+</html>
